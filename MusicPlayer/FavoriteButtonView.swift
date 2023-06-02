@@ -18,7 +18,6 @@ struct FavoriteButtonView: View {
                 Button {
                     viewStore.send(.favorited(track: <#T##Track#>))
                 } label: {
-                    Text("Heart")
                     Image(systemName: "heart")
                 }
                 
