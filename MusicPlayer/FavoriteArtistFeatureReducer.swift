@@ -11,8 +11,8 @@ import ComposableArchitecture
 struct FavoriteArtistFeatureReducer: ReducerProtocol {
     
     struct State: Equatable {
-        var listOfArtists: [String]
-        var favoritedArtists: [String] = []
+        var listOfSongs: [String]
+        var favoritedSongs: [String] = []
     }
     
     enum Action: Equatable {
@@ -27,9 +27,9 @@ struct FavoriteArtistFeatureReducer: ReducerProtocol {
     func reduce(into state: inout State, action: Action) -> EffectTask<Action> {
         switch action {
         case .favorited(let track):
-            state.favoritedArtists.append(track.artist)
+            state.favoritedSongs.append(track.title)
         case .unfavorited(let track):
-            state.favoritedArtists = state.favoritedArtists.filter(){$0 != track.artist}
+            state.favoritedSongs = state.favoritedSongs.filter(){$0 != track.title}
         }
         return .none
     }

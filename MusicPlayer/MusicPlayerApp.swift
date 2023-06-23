@@ -6,13 +6,14 @@
 //
 
 import SwiftUI
+import ComposableArchitecture
+
 
 @main
 struct MusicPlayerApp: App {
     var body: some Scene {
         WindowGroup {
-            
-            Track(title: "Best Days", artist: "Geo", duration: "3:12")
+            TrackRow()
         }
     }
 }

@@ -22,8 +22,10 @@ struct FeaturedArtistsList: View {
                 
                 ScrollView(.horizontal) {
                     HStack(alignment: .top, spacing: 25.0) {
-                        ForEach(viewStore.state.favoritedArtists, id: \.self) { artist in
-                            FeaturedArtist(artist: artist)
+                        ForEach(viewStore.state.favoritedSongs, id: \.self) { artist in
+                            FeaturedArtist(artist: artist, store: StoreOf<FavoriteArtistFeatureReducer>(initialState: FavoriteArtistFeatureReducer.State(listOfSongs: []), reducer: {
+                                FavoriteArtistFeatureReducer()
+                            }))
                         }
                     }
                     .padding(.horizontal)
@@ -33,62 +35,91 @@ struct FeaturedArtistsList: View {
     }
 }
 
+//struct MusicPlayerView: View {
+//    var body: some View {
+//        TrackRow(track: <#T##Track#>)
+//    }
+//}
+
 struct TrackRow: View {
-    let music: MusicPlaylist
-    let store: StoreOf<FavoriteArtistFeatureReducer>
-    
-    
+    //    let store: StoreOf<FavoriteArtistFeatureReducer>
+    @State var selectedTrack: Track?
     var body: some View {
+        //        var currentTrack: Track? = nil
         //        WithViewStore(self.store) { viewStore in
-        HStack {
-//            for track in musicPlaylist.musicPlaylist {
-                ForEach(music.musicPlaylist, id: \.self) { track in
-                    
-                track.thumbnail
-                    .padding()
-                    .background(track.gradient)
-                    .cornerRadius(6)
-                
-                Text(track.title)
-                Text(track.artist)
-                    .foregroundColor(.secondary)
-                    .lineLimit(1)
-                    .truncationMode(.tail)
-                
-                Spacer()
-                
-                Text("\(track.duration)")
-                FavoriteButtonView(store: StoreOf(initialState: FavoriteArtistFeatureReducer.State(listOfArtists: track.artist), reducer: {
-                    FavoriteArtistFeatureReducer()
-                }))
+        VStack(spacing: 10) {
+            ZStack {
+                RoundedRectangle(cornerRadius: 15)
+                    .fill(.gray)
+                    .shadow(radius: 15)
+                Image("SCNTD")
+                    .resizable()
+                    .scaledToFit()
             }
-        }.padding(.horizontal)
-        //                }
+            .frame(height: 180)
+            .padding(.horizontal)
+            
+            ScrollView(.vertical) {
+                VStack {
+                    //            for track in musicPlaylist {
+                    ForEach(musicPlaylist) { track in
+                        HStack {
+                            track.thumbnail
+                                .padding()
+                                .background(track.gradient)
+                                .cornerRadius(6)
+                            VStack(alignment: .leading) {
+                                Text(track.title)
+                                Text(track.artist)
+                                    .foregroundColor(.secondary)
+                                    .lineLimit(1)
+                                    .truncationMode(.tail)
+                            }.onTapGesture {
+                                selectedTrack = track
+                            }
+                            Spacer()
+                            
+                            Text("\(track.duration)")
+                            FavoriteButtonView(track: track, store: StoreOf<FavoriteArtistFeatureReducer>(initialState: FavoriteArtistFeatureReducer.State(listOfSongs: []), reducer: {
+                                FavoriteArtistFeatureReducer()
+                            }))
+                        }
+                    }
+                }.padding(.horizontal)
+            }
+        }
+        if selectedTrack != nil {
+            Spacer()
+            MusicPlayerControlsView(track: selectedTrack ?? Track(title: "--", artist: "--", duration: "-:-"))
+        }
     }
 }
 
 struct FeaturedArtist: View {
     let artist: String
+    let store: StoreOf<FavoriteArtistFeatureReducer>
     
     var body: some View {
-        VStack {
-            ZStack {
-                Circle()
-                    .fill([Color.orange, .pink, .purple, .red, .yellow].randomElement()!)
-                    .scaledToFit()
+        WithViewStore(self.store) { viewStore in
+            VStack {
+                ZStack {
+                    Circle()
+                        .fill([Color.orange, .pink, .purple, .red, .yellow].randomElement()!)
+                        .scaledToFit()
+                    
+                    Image(systemName: "music.mic")
+                        .resizable()
+                        .frame(width: 50, height: 50)
+                        .foregroundColor(.white)
+                }
                 
-                Image(systemName: "music.mic")
-                    .resizable()
-                    .frame(width: 50, height: 50)
-                    .foregroundColor(.white)
+                Text(artist)
+                    .multilineTextAlignment(.center)
+                    .lineLimit(2)
             }
-            
-            Text(artist)
-                .multilineTextAlignment(.center)
-                .lineLimit(2)
+            .frame(width: 120)
+            //        .padding(4)
         }
-        .frame(width: 120)
-        //        .padding(4)
     }
 }
 
